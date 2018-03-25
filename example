@@ -1,0 +1,9 @@
+// a stray comment
+sync dword someGlobal = 15;
+
+/*
+ * This is the main function
+ */
+void main(){0}{
+	GAME.short_description("This is a string");
+}

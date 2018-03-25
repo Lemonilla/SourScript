@@ -1,0 +1,317 @@
+%verbose
+%error-verbose
+
+%{
+#include <cstdio>
+#include <iostream>
+#include "tree_nodes.h"
+using namespace std;
+
+// stuff from flex that bison needs to know about:
+extern "C" int yylex();
+extern "C" int yyparse();
+extern "C" FILE *yyin;
+
+ 
+void yyerror(const char *s);
+void mergeLists_param(list<param*>* a, list<param*>* b);
+program* prgm;
+%}
+
+// so we can deal with multiple types
+%union {
+	int ival;
+	float fval;
+	char* str;
+	void* ptr;
+}
+
+%start program
+
+%token<ival> ASSIGN 1 
+%token<ival> PLUS 2 
+%token<ival> MINUS 3 
+%token<ival> DIV 4 
+%token<ival> MUL 5 
+%token<ival> MOD 6 
+%token<ival> BIT_OR 7 
+%token<ival> BIT_AND 8 
+%token<ival> BIT_XOR 9 
+%token<ival> RSL 10 
+%token<ival> LSL 11 
+%token<ival> AND 12 
+%token<ival> OR 13 
+%token<ival> GTR 14 
+%token<ival> LSS 15 
+%token<ival> GEQ 16 
+%token<ival> LEQ 17 
+%token<ival> EQU 18 
+%token<ival> NEQ 19 
+%token<ival> NOT 20 
+%token<ival> IF 21 
+%token<ival> ELSE 22 
+%token<ival> SWITCH 23 
+%token<ival> CASE 24 
+%token<ival> WHILE 25 
+%token<ival> BREAK 26 
+%token<ival> RETURN 27 
+%token<ival> BASE_TYPE 28 
+%token<ival> OBJ_TYPE 29 
+%token<ival> SUPER_TYPE 30 
+%token<ival> OBJ 31 
+%token<ival> FLOAT 32 
+%token<ival> DEC 33 
+%token<ival> HEX 34 
+%token<str> NAME 35 
+%token<ival> STRING 36
+
+
+%type<ptr> program
+%type<ptr> func
+%type<ival> func_n
+%type<ptr> params
+%type<ptr> param_l
+%type<ptr> global
+%type<ptr> number // void* must cast
+%type<ptr> stmt
+%type<ptr> stmts
+%type<ptr> stmtb
+%type<ptr> caseb
+%type<ptr> cases
+%type<str> id
+%type<ptr> expr
+%type<ptr> expr_
+%type<ptr> comp
+%type<ptr> value // void* must cast
+%type<ptr> values
+%type<ival> biop
+
+%%
+
+program	: program func
+			{ prgm->definitions->push_back(* ((def*) $1)); }
+		| program global
+			{ prgm->definitions->push_back(* ((def*) $1)); }
+		| /* empty */
+		;
+
+func	: BASE_TYPE NAME params func_n stmtb
+			{ 
+				func* f = new func($1,$2,(std::list<param*>*) $3, $4, (std::list<stmt*>*) $5);
+				cout << "Found a function declaration: " << f->name << endl;
+				$$ = f;
+			}
+		;
+
+func_n	: '{' number '}'
+			{ $$ = (uint32_t) $2; }
+		| '{' '}'
+			{ $$ = -1; }
+		;
+
+params	: '(' param_l ')'
+			{ $$ = $2; }
+		| '(' ')'
+			{ $$ = (void*) new list<param*>(); }
+		;
+
+param_l	: BASE_TYPE NAME
+			{ 
+				list<param*>* t = new list<param*>();
+				param* p = new param($1,$2);
+				t->push_back(p); 
+				$$ = t;
+			}
+		| SUPER_TYPE BASE_TYPE NAME
+			{ 
+				list<param*>* t = new list<param*>();
+				t->push_back(new param($2,$3,$1)); 
+				$$ = t;
+			}
+		| OBJ_TYPE NAME
+			{ list<param*>* t = new list<param*>();
+				t->push_back(new param($1,$2)); 
+				$$ = t;
+			}
+		| param_l ',' BASE_TYPE NAME
+			{ 
+				list<param*>* t = new list<param*>();
+				t->push_back(new param($3,$4));
+				mergeLists_param((list<param*>*) $1, t);
+				$$ = $1;
+			}
+		| param_l ',' SUPER_TYPE BASE_TYPE NAME
+			{ 
+				list<param*>* t = new list<param*>();
+				t->push_back(new param($4,$5,$3)); 
+				mergeLists_param((list<param*>*) $1, t);
+				$$ = $1;
+			}
+		| param_l ',' OBJ_TYPE NAME
+			{ 
+				list<param*>* t = new list<param*>();
+				t->push_back(new param($3,$4)); 
+				mergeLists_param((list<param*>*) $1, t);
+				$$ = $1;
+			}
+		;
+
+global	: SUPER_TYPE BASE_TYPE NAME ';'
+			{ cout << "global supertyped delclaration" << endl; }
+		| BASE_TYPE NAME ';'
+			{ cout << "global base type declaration" << endl; }
+		| OBJ_TYPE NAME ';'
+			{ cout << "global obj type declaration" << endl; }
+		| SUPER_TYPE BASE_TYPE NAME ASSIGN number ';'
+			{ cout << "global supertyped delclaration with assignment" << endl; }
+		| BASE_TYPE NAME ASSIGN number ';'
+			{ cout << "global base type declaration with assignment" << endl; }
+		| OBJ_TYPE NAME ASSIGN number ';'
+			{ cout << "global obj type declaration with assignment" << endl; }
+		;
+
+number	: HEX
+		| DEC
+		| FLOAT
+		;
+
+stmt	: NAME ASSIGN expr ';'
+			{ cout << "assignment statement" << endl;}
+		| OBJ '.' NAME ASSIGN expr ';'
+			{ cout << "assignment statement" << endl;}
+		| NAME '.' NAME ASSIGN expr ';'
+			{ cout << "assignment statement" << endl;}
+		| NAME '(' values ')' ';'
+			{ cout << "function call statement" << endl; }
+		| OBJ '.' NAME '(' values ')' ';'
+			{ cout << "function call from object statement" << endl; }
+		| NAME '.' NAME '(' values ')' ';'
+			{ cout << "function call from name statement" << endl; }
+		| BASE_TYPE NAME ASSIGN expr ';'
+			{ cout << "local var define and assignment" << endl; }
+		| SUPER_TYPE BASE_TYPE NAME ASSIGN expr ';'
+			{ cout << "local var define and assignment" << endl; }
+		| OBJ_TYPE NAME ASSIGN expr ';'
+			{ cout << "local var define and assignment" << endl; }
+		| BASE_TYPE NAME ';'
+			{ cout << "local var define" << endl; }
+		| SUPER_TYPE BASE_TYPE NAME ';'
+			{ cout << "local var define" << endl; }
+		| OBJ_TYPE NAME ';'
+			{ cout << "local var define" << endl; }
+		| IF '(' expr ')' stmtb
+			{ cout << "if statement" << endl;}
+		| IF '(' expr ')' stmtb ELSE stmtb
+			{ cout << "if else statement" << endl;}
+		| WHILE '(' expr ')' stmtb
+			{ cout << "while loop" << endl;}
+		| SWITCH '(' id ')' caseb
+			{ cout << "switch statement" << endl;}
+		| RETURN value ';'
+		;
+
+stmtb	: '{' stmts '}'
+			{ cout << "statement block" << endl; }
+		;
+
+stmts	: stmt
+			{ cout << "last statement" << endl; }
+		| stmt stmts
+			{ cout << "continue statement list" << endl; }
+		;
+
+caseb	: '{' cases '}'
+			{ cout << "cases block" << endl;}
+
+cases	: CASE value ':' stmts BREAK ';' cases
+			{ cout << "case of value" << endl; }
+		| /* Emtpy Set */
+			{ cout << "end of cases" << endl;}
+		;
+
+id 		: NAME
+		| OBJ '.' NAME
+		| NAME '.' NAME
+		;
+
+expr	: comp biop expr_
+		| NOT expr
+		| BIT_AND expr
+		| expr_
+		;
+
+expr_	:'(' expr ')'
+		| NAME '(' values ')'
+		| value
+		;
+
+comp	: comp biop expr_
+		| expr_
+		;
+
+value	: NAME
+		| OBJ '.' NAME
+		| NAME '.' NAME
+		| STRING
+		| number
+		;
+
+values	: value
+		| value ',' values
+		| /* Empty Set */
+		; 
+
+biop	: PLUS
+		| MINUS
+		| DIV
+		| MUL
+		| MOD
+		| BIT_OR
+		| BIT_AND
+		| BIT_XOR
+		| RSL
+		| LSL
+		| AND
+		| OR
+		| GTR
+		| LSS
+		| GEQ
+		| LEQ
+		| EQU
+		| NEQ
+		;
+
+
+%%
+int main(int argc, char *argv[]) {
+	// open a file handle to a particular file:
+	FILE *myfile = fopen(argv[1], "r");
+	// make sure it is valid:
+	if (!myfile) {
+		cout << "I can't open file: " << argv[1] << endl;
+		return -1;
+	}
+	// set flex to read from it instead of defaulting to STDIN:
+	yyin = myfile;
+	
+	// parse through the input until there is no more:
+	do {
+		yyparse();
+	} while (!feof(yyin));
+	
+}
+
+void yyerror(const char *s) {
+	cout << "EEK, parse error!  Message: " << s << endl;
+	// might as well halt now:
+	exit(-1);
+}
+
+void mergeLists_param(list<param*>* a, list<param*>* b)
+{
+	while(!b->empty()) {
+		a->push_back(b->front());
+		b->pop_front();
+	}
+	delete b;
+}

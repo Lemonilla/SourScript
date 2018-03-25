@@ -1,0 +1,244 @@
+Keywords:
+
+if
+else
+#			// starts and ends direct hex input (does not do little endian conversion)
+@			// starts and ends direct pasm entry (does little endian conversion)
+switch
+while
+delete 		// unbind a register
+
+
+Types:
+
+void
+func		// defines a function
+func <id>(flag) // defines required flag id
+sync		// the variable is synced across all clients on assignment
+dword		// 32 bits
+word		// 16 bits
+byte		// 8 bits
+nibble		// 4 bits
+bit			// 1 bit
+single		// floating point
+temp		// temporary var, unbinds after first use
+reserved	// stores reserved player data (q and g flags) gset / set_global_flag
+[]			// makes an array
+string		// stores text
+npc 		// holds a NPC pointer
+	(dword npc_id)
+	.id => dword
+	.chat(string message)
+	.die() => bit
+	.follow(bit state) => bit
+	.load_custom(func handler)
+qb			// quest board object, reserves it's register on init
+	(string name, func callback, nibble slot) => qb
+	.display(bit show) => bit
+	.delete()
+	.message(string message)
+timer
+	(bit type)
+		type 0 = count up
+		type 1 = count down
+	.start()
+	.stop()
+	.duration => dword
+	.call_in(dword frames, func callback)
+	.display(bit show) => bit
+floor
+	.add_handler(func handler)
+	.remove_handler()
+	.room_cleared(word room_id) => bit
+	.mainwarp(bit state) => bit
+	.script_collition(func handler, single x, single y, single z, dword range)
+	.script_object(func handler, single x, single y, single z)
+	.trigger_event(dword wave_id)
+	.show_objects(dword room_id, dword wave_id)
+	.open(dword door_id)
+	.close(dword door_id)
+	.lock_state(dword door_id) => bit
+	.pipe(nibble slot, single x, single y, single z)
+monster
+	(dword monster_id)
+	.physical(nibble, nibble, nibble, nibble, nibble, nibble, nibble, nibble, nibble, nibble, nibble, nibble, nibble)         // (atp, dfp, evp, ata, mst, esp, lck, hp, tp, exp, atk_range, eng_range, tech)
+	.resistance(nibble, nibble, nibble, nibble, nibble)		// (efr, eic, eth, elt, edk)
+
+
+Macros
+
+thread(func root, bit stageIndependent)
+
+message(string message) // window_msg
+message(string message, single x%, single y%, dword width, dword height, nibble type, nibble speed) => bit
+	type 0 = Windowed white window message style.
+	type 1 = Windowed chat box style.
+	type 2 = Not windowed will scroll text with no underlay.
+list(string[] choices) => dword index
+players_in_range(dword slot_number, dword range) => byte
+f2d(single to_convert) => dword
+d2f(single to_convert) => single
+sleep(dword seconds)
+wait(dword frames)
+monster(dword monster_id) => monster
+
+Build in objects:
+
+QUEST
+	.initial_floor(byte floor_id)
+	.set_floor(nibble floor_id, nibble map_id, byte variation) => floor
+	.set_episode(byte episode_id)
+	.on_success(func handler)
+	.on_failure(func handler)
+	.on_cancel(func handler)
+	.on_exit(func handler)
+	.mainwarp(bit state) => bit
+	.freeze_monsters(bit state)
+	.freeze_everything(bit state)
+	.freeze_and_hide(bit state)
+	.map(bit state) => bit
+	.pvp(bit state) => bit
+	.sound(bit type, dword sound_id)
+		type 0 = sfx
+		type 1 = bgm
+	.mainmenu(bit state) => bit
+	.warp(bit state) => bit
+	.set_short_description(string description)
+	.set_long_description(string description)
+	.set_name(string quest_name)
+	.set_number(word quest_id)
+PLAYER_1
+PLAYER_2
+PLAYER_3
+PLAYER_4
+SELF
+	.gender => byte
+	.class => dword
+	.section_id => byte
+	.meseta => dword
+	.hp => dword
+	.tp => dword
+	.hp_max => dword
+	.tp_max => dword
+	.level -> dword
+	.time_played => dword
+	.guildcard_total => dword??
+	.floor_number => byte
+	.room_number => dword
+	.slot_number => nibble
+	.server_number => dword
+	.x => single
+	.y => single
+	.z => single
+	.gflag(word gflag_id) => dword
+	.qflag(nibble qflag_id) => dword
+	.give(dword item_code, dword item_code, dword item_code) => bit
+	.take(dword item_code, dword item_code, dword item_code) => bit
+	.give(dword meseta)
+	.take(dword meseta) => bit
+	.open_pack() => dword
+	.techs(bit state) => bit
+	.dead => bit
+	.warp_to_guild()
+	.movement(bit) => bit
+	.action(bit state) => bit
+	.status(dword status_code)		// status_code will be in an include
+	.quit()
+	.shrink(bit state) => bit
+	.number_in_pack(dword item_code) => nibble (0-30)
+	.swap_item(dword in_item_code1, dword in_item_code2, dword in_item_code3, dword out_item_code1, dword out_item_code2, dword out_item_code3, func on_success, func on_failure)
+	.animation(dword animation_code)
+	.stop_animation()
+	.look_at_player(byte slot_number)
+CAMERA
+	.reset()
+	.quake()
+	.blur()
+	.black_and_white()
+	.fade(bit state) => bit
+	.cinima(bit state) => bit
+	.square(bit state) => bit
+	.zoom(bit state) => bit
+	.hud(bit state) => bit
+	.fixed_position(single x, single y, single z, single x, single y, single z)
+PALETTEX
+	.enable(byte player_slot, func handler)
+	.disable(byte player_slot)
+	.get_state(byte player_slot) => bit
+
+NUMBER_OF_PLAYERS => nibble
+CURRENT_TIME => dword
+DIFFICULTY => nibble
+RANDOM => dword
+ENEMIES_DEFEATED => dword
+
+
+
+
+#defines
+MALE		000000
+FEMALE		010000
+HUMAR		000000
+HUNEWEARL	010100
+HUCAST		000200
+HUCASEAL	010200
+RAMAR 		000001
+RAMARL		010001
+RACAST		000201
+RACASEAL	010201
+FOMAR 		000002
+FOMARL		010002
+FONEWMAN	000102
+FONEWEARL	010102
+
+
+
+Operators
+
++			// add
+-			// subtract
+*			// multiply
+/			// divide
+%			// mod
+|			// logical or
+&			// logical and
+$			// logical xor
+!			// logical not
+>>			// shift right
+<<			// shift left
+&&			// boolean and
+||			// boolean or
+&			// address of (used with leta and leto)
+
+
+
+Returning from multiple Threads
+
+Instead of just returning by dumping the return value in a specific register, all threads\functions share 2 return registers, 1 to returnt he value in and the other to designate who should get the value returned.  Thus a return call looks like this in pasm
+
+// R1 = Return Value
+// R2 = THREAD_ID
+
+callee:	sync 							// allow frames to update
+		jmpi_!= R2, 00000000, callee 	// if THREAD_ID isn't NULL then we
+										//  need to wait our turn
+		leti R2, THREAD_ID				// reserve our usage of the channel
+										//  by setting R2 = our flag
+		let R1, RETURN_VALUE			// R1 = our return value value
+		ret 							// return out of the function
+
+the callee then is required to clear the R2 register once they have retrieved the value returned from the called function.  Since THREAD_ID is determined at compiletime both the caller and the callee will already know the code, and it will be guarenteed uniqueness.  However this does limit the number of functions to 0xFFFFFFFF, though this may be limited by PSO more than the THREAD_ID size limit.
+To prevent the race condition on a context switch after R2 is set but before R1 is set, a certain value must be set in R1 by the callee after reading it's return, a good candidate being 0x80000000.  If the callee sees their code in R2, but R1 is not a valid return number, it will continue to wait.  An example callee codeblock would be as such.
+
+		...
+		call 201							// make our function call
+caller:	sync								// allow frames to update
+		jmpi_= R1, 80000000, caller			// make sure we haven't hit a 
+											//  race condition
+		let LOCAL_VARIABLE_REGISTER, R1		// store our returned value
+		leti R1, 80000000					// remove our return value
+		leti R2, 00000000					// release our use of the 
+											//  return channel
+		...									// continue execution
+
+Thus no thread can interrupt the return procedure.  Since a thread can only be in one location at a time, 

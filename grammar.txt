@@ -1,0 +1,139 @@
+$letter	= a | b | c | d | e | f | g | h | i | j | k | l | m | n | o | p | q | r | s | t | u | v | w | z | y | z | A | B | C | D | E | F | G | H | I | J | K | L | M | N | O | P | Q | R | S | T | U | V | W | X | Y | Z
+$letters= $letter $letters
+		| $letter
+$chars 	= $digit $chars_
+		| $letter $chars_
+		| _ $chars_
+$chars_ = $chars
+		| E
+$hex	= 0x $hex_
+$hex_ 	= $digit $hex_
+		| a $hex_
+		| b $hex_
+		| c $hex_
+		| d $hex_
+		| e $hex_
+		| f $hex_
+		| A $hex_
+		| B $hex_
+		| C $hex_
+		| D $hex_
+		| E $hex_
+		| F $hex_
+		| E
+$dec 	= $digit $dec_
+$dec_	= $dec
+		| E
+$num	= $hex 
+		| $dec
+
+$name	= $letter $chars
+
+$biop	= +
+		| -
+		| *
+		| /
+		| %
+		| |
+		| &
+		| $
+		| >>
+		| <<
+		| &&
+		| ||
+		| >
+		| <
+		| >=
+		| <=
+		| ==
+		| !=
+$stype	= sync
+		| temp
+		| reserved
+$type	= string
+		| npc
+		| qb
+		| timer
+		| floor
+		| monster
+		| $type_
+$type_	= single
+		| dword
+		| word
+		| byte
+		| nibble
+		| bit
+
+$id 	= $name
+		| $obj . $name
+
+$ids	= $id
+		| $ids , $id
+
+$obj	= QUEST | PLAYER_1 | PLAYER_2 | PLAYER_3 | PLAYER_4 | SELF | CAMERA | PALETTEX
+
+$stmt	= $id = $expr ;
+		| $cfunc ;
+		| $type $name ;
+		| $type $name = $expr ;
+		| $stype $type_ $name ;
+		| if( $expr ) $stmt
+		| if( $expr ) $stmt else $stmt
+		| while( $expr ) $stmt
+		| { $stmts }
+		| switch( $id ) { $cases }
+		| @ $asm @
+		| ~ $hex_asm ~
+
+$stmts	= $stmt
+		| $stmt $stmts
+
+$cases	= case $value : $stmts break; $cases
+		| E
+
+$params	= $type $name
+		| $params , $type $name
+
+$expr 	= $expr_ $biop $expr
+		| $expr_
+
+$expr_	= $cfunc
+		| $num
+		| $id
+		| ! $exprlist
+		| & $id
+
+$cfunc	= $name ( $ids )
+
+$drctv	= #include $name .pc
+		| #define $id $characters
+
+$		= $drctv $
+		| $type $name ;
+		| $stype $type_ $name ;
+		| $type_ $name (){} $stmt $
+		| $type_ $name (){ $num } $stmt $
+		| $type_ $name ( $params ){} $stmt $
+		| $type_ $name ( $params ){ $num } $stmt $
+		| @ $asm @ $
+		| ~ $hex_asm ~ $
+		| // $comnt \n $
+		| /* $mcomnt */ $
+		| E
+
+$hex_asm = $hex_ $hex_asm
+		 | // $comnt $hex_asm
+		 | /* $mcomnt */ $hex_asm
+
+
+
+
+
+list = {}
+	| {le rest_list}
+rest_list = E
+		| , le rest_list
+
+
+
+LALR(1) 1 lookahead token

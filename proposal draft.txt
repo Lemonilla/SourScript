@@ -1,0 +1,54 @@
+The goal of this project is to create a high level language and a compiler to compile into pasm, an interpreted proprietary language used in the SEGA game Phantasy Star Online.  The motivation behind this project is to replace the extremely frusturating assembler that is currently the only means of creating pasm files.  The current software is unmaintained and does not support many of the new opcodes that the Reverse Engineering team have discovered since it's creation in 2007.  Some resources that I plan to make use of include the pasm documentation found at sharnoth.com/psodevwiki and qedit.info, as well as potentially using the source code of the depricated old assembler.  In addition to this I plan on doing research on compilers and language design; utilizing Aho's Compiler book (Red Dragon Compiler Book) and potentially other documents on the subject.  Some potential pitfalls for the project include the lack of completeness of pasm; namidly it's lack of store or load opcodes.  Another pitfall is likely to be it's lack of documentation.  A good section of pasm has yet to be reverse engineered, and as such is has unknown functionality.  The compiler must be built with this in mind and have the modularity to be updated easily with new or changing understanding of pasm.
+
+
+Steps:
+1. Design a High Level Language
+2. Compiler Front End
+	a. lexical analysis (tokenize)
+	b. syntax analysis (build parse tree)
+	c. semantic analysis (decorate parse tree)
+3. Compiler Back End
+	a. code generation (parse tree to code)
+
+Stretch Goals:
+1. Direct Assembly Input
+2. Integration Engine
+	a. prs compression
+	b. qst file production
+3. Version control
+	a. alter compiler front end to detect version specific opcodes
+4. GUI editor addon
+	- possibly vscode
+	- possibly sublime
+5. Dissassembler
+	a. decode qst
+	b. decompress prs
+	c. lexical analysis (tokenizer)
+	d. token destruction (remove hidden code)
+	e. stringification (convert binary to string)
+	f. line reconstruction (instert \t and \n for formatting)
+6. Compiler Middle End
+	a. code optimization
+
+
+Timeline:
+15 Jan planning
+22 Jan planning (Present)
+29 Jan 1 done
+ 5 Feb 2 started
+12 Feb 2.a done, 2.b started
+19 Feb 2.b, 2.c done
+26 Feb 2 done and 3.a started
+ 5 Mar 3.a, 3.b done 
+12 Mar 3.c done, 3.d started (Present)
+19 Mar 
+26 Mar 4.a done
+ 9 Apr 
+16 Apr (Present)
+
+
+References:
+	http://qedit.info
+	http://sharnoth.com/psodevwiki/
+	Aho, Sethi, Ullman, Compilers: Principles, Techniques, and Tools, Addison-Wesley, 1986. ISBN 0-201-10088-6
+	Schthack, Lee, Myria, Clara, Aleron Ives, Gatten, Qedit source code

@@ -1,0 +1,34 @@
+// a stray comment
+sync dword someGlobal = 15;
+temp bit funLilVar;
+
+/*
+ * This is the main function
+ */
+void main(){0}{
+	GAME.short_description("This is a string with \"escaped\" quotes.");
+	if (PLAYER_1.hp > 2500) { 
+		funLilVar = 1;
+	} else {
+		// Always a good time with funLilVar
+		funLilVar = 1;
+	}
+}
+
+dword getSomeValue_for_no_reason(bit debug){}
+{
+	// with comments
+	// everywhere
+	/* many many comments. 
+		*the best kind of code :/ */
+
+	dword idc;
+	idc = getSomeValue_for_no_reason(7);
+	return idc;
+}
+
+void createNPCs(){0x11}{
+	npc bob;
+	bob.id = 1337;
+	bob.speak("I AM KING!");
+}
