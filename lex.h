@@ -34,3 +34,10 @@
 #define HEX						34						
 #define NAME					35	
 #define STRING					36						
+
+union token {
+    int ival;
+    float fval;
+    char* str;
+    void* ptr;
+};
