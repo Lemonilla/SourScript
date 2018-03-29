@@ -1,3 +1,3 @@
 flex lex
 bison -d parse
-g++ parse.tab.c lex.yy.c
+g++ program.c parse.tab.c lex.yy.c table.c

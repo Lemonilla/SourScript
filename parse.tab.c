@@ -70,6 +70,8 @@
 /* Line 189 of yacc.c  */
 #line 8 "parse"
 
+#define DEBUG
+
 #include <cstdio>
 #include <iostream>
 #include "tree_nodes.h"
@@ -82,14 +84,15 @@ extern "C" int yyparse();
 extern "C" FILE *yyin;
 extern "C" char* yytext;
 extern "C" int yylineno;
+extern "C" program* prgm;
+extern "C" void buildTree(char* filename);
 
 void yyerror(const char *s);
 void mergeLists( list<void*>* a, list<void*>* b);
-program* prgm;
 
 
 /* Line 189 of yacc.c  */
-#line 93 "parse.tab.c"
+#line 96 "parse.tab.c"
 
 /* Enabling traces.  */
 #ifndef YYDEBUG
@@ -162,7 +165,7 @@ typedef union YYSTYPE
 {
 
 /* Line 214 of yacc.c  */
-#line 28 "parse"
+#line 31 "parse"
 
 	int ival;
 	float fval; // maybe double.  check size
@@ -172,7 +175,7 @@ typedef union YYSTYPE
 
 
 /* Line 214 of yacc.c  */
-#line 176 "parse.tab.c"
+#line 179 "parse.tab.c"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
@@ -184,7 +187,7 @@ typedef union YYSTYPE
 
 
 /* Line 264 of yacc.c  */
-#line 188 "parse.tab.c"
+#line 191 "parse.tab.c"
 
 #ifdef short
 # undef short
@@ -504,15 +507,15 @@ static const yytype_int8 yyrhs[] =
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint16 yyrline[] =
 {
-       0,    97,    97,   102,   108,   113,   124,   129,   136,   141,
-     148,   156,   163,   170,   178,   186,   196,   202,   208,   214,
-     220,   226,   234,   238,   242,   250,   256,   262,   268,   274,
-     280,   286,   292,   298,   304,   310,   316,   322,   328,   334,
-     340,   346,   354,   358,   360,   364,   370,   380,   387,   391,
-     395,   401,   405,   409,   413,   419,   423,   427,   433,   437,
-     443,   447,   451,   455,   459,   465,   471,   479,   484,   485,
-     486,   487,   488,   489,   490,   491,   492,   493,   494,   495,
-     496,   497,   498,   499,   500,   501
+       0,   100,   100,   105,   111,   116,   127,   132,   139,   144,
+     151,   159,   166,   173,   181,   189,   199,   205,   211,   217,
+     223,   229,   237,   241,   245,   253,   259,   265,   271,   277,
+     283,   289,   295,   301,   307,   313,   319,   325,   331,   337,
+     343,   349,   357,   361,   363,   367,   373,   383,   390,   394,
+     398,   404,   408,   412,   416,   422,   426,   430,   436,   440,
+     446,   450,   454,   458,   462,   468,   474,   482,   487,   488,
+     489,   490,   491,   492,   493,   494,   495,   496,   497,   498,
+     499,   500,   501,   502,   503,   504
 };
 #endif
 
@@ -1529,27 +1532,27 @@ yyreduce:
         case 2:
 
 /* Line 1455 of yacc.c  */
-#line 98 "parse"
+#line 101 "parse"
     { 
-				cout << "function added to program" << endl;
-				prgm->definitions->push_back(* ((def*) (yyvsp[(1) - (2)].ptr))); 
+				DEBUG cout << "function added to program" << endl;
+				prgm->definitions->push_back(((def*) (yyvsp[(1) - (2)].ptr))); 
 			;}
     break;
 
   case 3:
 
 /* Line 1455 of yacc.c  */
-#line 103 "parse"
+#line 106 "parse"
     { 
-				cout << "global thingy" << endl;
-				prgm->definitions->push_back(* ((def*) (yyvsp[(1) - (2)].ptr)));
+				DEBUG cout << "global thingy" << endl;
+				prgm->definitions->push_back(((def*) (yyvsp[(1) - (2)].ptr)));
 			;}
     break;
 
   case 4:
 
 /* Line 1455 of yacc.c  */
-#line 108 "parse"
+#line 111 "parse"
     {
 				/* do nothing */
 			;}
@@ -1558,23 +1561,23 @@ yyreduce:
   case 5:
 
 /* Line 1455 of yacc.c  */
-#line 114 "parse"
+#line 117 "parse"
     { 
 				func* f = new func((yyvsp[(1) - (5)].str),(yyvsp[(2) - (5)].str),(std::list<param*>*) (yyvsp[(3) - (5)].ptr), (yyvsp[(4) - (5)].ival), (std::list<stmt*>*) (yyvsp[(5) - (5)].ptr));
-				cout << "Found a function declaration: " << f->name << endl;
-				cout << "\tfunction number: " << f->func_number << endl;
-				cout << "\treturn type: " << f->return_type << endl;
+				DEBUG cout << "Found a function declaration: " << f->name << endl;
+				DEBUG cout << "\tfunction number: " << f->func_number << endl;
+				DEBUG cout << "\treturn type: " << f->return_type << endl;
 				(yyval.ptr) = f;
-				cout << "finished" << endl;
+				DEBUG cout << "finished" << endl;
 			;}
     break;
 
   case 6:
 
 /* Line 1455 of yacc.c  */
-#line 125 "parse"
+#line 128 "parse"
     { 
-				cout << "func number" << endl;
+				DEBUG cout << "func number" << endl;
 				(yyval.ival) = (uint32_t) (yyvsp[(2) - (3)].ptr);
 			;}
     break;
@@ -1582,9 +1585,9 @@ yyreduce:
   case 7:
 
 /* Line 1455 of yacc.c  */
-#line 130 "parse"
+#line 133 "parse"
     { 
-				cout << "func number" << endl;
+				DEBUG cout << "func number" << endl;
 				(yyval.ival) = -1; 
 			;}
     break;
@@ -1592,9 +1595,9 @@ yyreduce:
   case 8:
 
 /* Line 1455 of yacc.c  */
-#line 137 "parse"
+#line 140 "parse"
     { 
-				cout << "func params" << endl;
+				DEBUG cout << "func params" << endl;
 				(yyval.ptr) = (yyvsp[(2) - (3)].ptr); 
 			;}
     break;
@@ -1602,9 +1605,9 @@ yyreduce:
   case 9:
 
 /* Line 1455 of yacc.c  */
-#line 142 "parse"
+#line 145 "parse"
     { 
-				cout << "func params empty" << endl;
+				DEBUG cout << "func params empty" << endl;
 				(yyval.ptr) = (void*) new list<param*>(); 
 			;}
     break;
@@ -1612,9 +1615,9 @@ yyreduce:
   case 10:
 
 /* Line 1455 of yacc.c  */
-#line 149 "parse"
+#line 152 "parse"
     { 
-				cout << "param listing" << endl;
+				DEBUG cout << "param listing" << endl;
 				list<param*>* t = new list<param*>();
 				param* p = new param((yyvsp[(1) - (2)].str),(yyvsp[(2) - (2)].str));
 				t->push_back(p); 
@@ -1625,9 +1628,9 @@ yyreduce:
   case 11:
 
 /* Line 1455 of yacc.c  */
-#line 157 "parse"
+#line 160 "parse"
     { 
-				cout << "param listing" << endl;
+				DEBUG cout << "param listing" << endl;
 				list<param*>* t = new list<param*>();
 				t->push_back(new param((yyvsp[(2) - (3)].str),(yyvsp[(3) - (3)].str),(yyvsp[(1) - (3)].str))); 
 				(yyval.ptr) = t;
@@ -1637,9 +1640,9 @@ yyreduce:
   case 12:
 
 /* Line 1455 of yacc.c  */
-#line 164 "parse"
+#line 167 "parse"
     { 
-				cout << "param listing" << endl;
+				DEBUG cout << "param listing" << endl;
 				list<param*>* t = new list<param*>();
 				t->push_back(new param((yyvsp[(1) - (2)].str),(yyvsp[(2) - (2)].str))); 
 				(yyval.ptr) = t;
@@ -1649,9 +1652,9 @@ yyreduce:
   case 13:
 
 /* Line 1455 of yacc.c  */
-#line 171 "parse"
+#line 174 "parse"
     { 
-				cout << "param listing" << endl;
+				DEBUG cout << "param listing" << endl;
 				list<param*>* t = new list<param*>();
 				t->push_back(new param((yyvsp[(3) - (4)].str),(yyvsp[(4) - (4)].str)));
 				mergeLists((list<void*>*) (yyvsp[(1) - (4)].ptr),(list<void*>*) t);
@@ -1662,9 +1665,9 @@ yyreduce:
   case 14:
 
 /* Line 1455 of yacc.c  */
-#line 179 "parse"
+#line 182 "parse"
     { 
-				cout << "param listing" << endl;
+				DEBUG cout << "param listing" << endl;
 				list<param*>* t = new list<param*>();
 				t->push_back(new param((yyvsp[(4) - (5)].str),(yyvsp[(5) - (5)].str),(yyvsp[(3) - (5)].str))); 
 				mergeLists((list<void*>*) (yyvsp[(1) - (5)].ptr),(list<void*>*) t);
@@ -1675,9 +1678,9 @@ yyreduce:
   case 15:
 
 /* Line 1455 of yacc.c  */
-#line 187 "parse"
+#line 190 "parse"
     { 
-				cout << "param listing" << endl;
+				DEBUG cout << "param listing" << endl;
 				list<param*>* t = new list<param*>();
 				t->push_back(new param((yyvsp[(3) - (4)].str),(yyvsp[(4) - (4)].str))); 
 				mergeLists((list<void*>*) (yyvsp[(1) - (4)].ptr),(list<void*>*) t);
@@ -1688,20 +1691,20 @@ yyreduce:
   case 16:
 
 /* Line 1455 of yacc.c  */
-#line 197 "parse"
+#line 200 "parse"
     { 
 				global* g = new global((yyvsp[(2) - (4)].str), (yyvsp[(3) - (4)].str), (yyvsp[(1) - (4)].str));
 				(yyval.ptr) = g;
-				cout << "global supertyped delclaration" << endl; 
+				DEBUG cout << "global supertyped delclaration" << endl; 
 			;}
     break;
 
   case 17:
 
 /* Line 1455 of yacc.c  */
-#line 203 "parse"
+#line 206 "parse"
     { 
-				cout << "global base type declaration" << endl; 
+				DEBUG cout << "global base type declaration" << endl; 
 				global* g = new global((yyvsp[(1) - (3)].str), (yyvsp[(2) - (3)].str));
 				(yyval.ptr) = g;
 			;}
@@ -1710,9 +1713,9 @@ yyreduce:
   case 18:
 
 /* Line 1455 of yacc.c  */
-#line 209 "parse"
+#line 212 "parse"
     { 
-				cout << "global obj type declaration" << endl; 
+				DEBUG cout << "global obj type declaration" << endl; 
 				global* g = new global((yyvsp[(1) - (3)].str), (yyvsp[(2) - (3)].str));
 				(yyval.ptr) = g;
 			;}
@@ -1721,9 +1724,9 @@ yyreduce:
   case 19:
 
 /* Line 1455 of yacc.c  */
-#line 215 "parse"
+#line 218 "parse"
     { 
-				cout << "global supertyped delclaration with assignment" << endl; 
+				DEBUG cout << "global supertyped delclaration with assignment" << endl; 
 				global* g = new global((yyvsp[(2) - (6)].str), (yyvsp[(3) - (6)].str), (uint32_t) (yyvsp[(5) - (6)].ptr), (yyvsp[(1) - (6)].str));
 				(yyval.ptr) = g;
 			;}
@@ -1732,9 +1735,9 @@ yyreduce:
   case 20:
 
 /* Line 1455 of yacc.c  */
-#line 221 "parse"
+#line 224 "parse"
     { 
-				cout << "global base type declaration with assignment" << endl; 
+				DEBUG cout << "global base type declaration with assignment" << endl; 
 				global* g = new global((yyvsp[(1) - (5)].str), (yyvsp[(2) - (5)].str), (uint32_t) (yyvsp[(4) - (5)].ptr));
 				(yyval.ptr) = g;
 			;}
@@ -1743,9 +1746,9 @@ yyreduce:
   case 21:
 
 /* Line 1455 of yacc.c  */
-#line 227 "parse"
+#line 230 "parse"
     { 
-				cout << "global obj type declaration with assignment" << endl; 
+				DEBUG cout << "global obj type declaration with assignment" << endl; 
 				global* g = new global((yyvsp[(1) - (5)].str), (yyvsp[(2) - (5)].str), (uint32_t) (yyvsp[(4) - (5)].ptr));
 				(yyval.ptr) = g;
 			;}
@@ -1754,7 +1757,7 @@ yyreduce:
   case 22:
 
 /* Line 1455 of yacc.c  */
-#line 235 "parse"
+#line 238 "parse"
     {
 				(yyval.ptr) = (void*) (yyvsp[(1) - (1)].ival);
 			;}
@@ -1763,7 +1766,7 @@ yyreduce:
   case 23:
 
 /* Line 1455 of yacc.c  */
-#line 239 "parse"
+#line 242 "parse"
     {
 				(yyval.ptr) = (void*) (yyvsp[(1) - (1)].ival);
 			;}
@@ -1772,7 +1775,7 @@ yyreduce:
   case 24:
 
 /* Line 1455 of yacc.c  */
-#line 243 "parse"
+#line 246 "parse"
     {
 				num n;
 				n.real = (yyvsp[(1) - (1)].fval);
@@ -1783,9 +1786,9 @@ yyreduce:
   case 25:
 
 /* Line 1455 of yacc.c  */
-#line 251 "parse"
+#line 254 "parse"
     { 
-				cout << "assignment statement" << endl;
+				DEBUG cout << "assignment statement" << endl;
 				stmt* s = new stmt_assign((yyvsp[(1) - (4)].str),(expr*) (yyvsp[(3) - (4)].ptr));
 				(yyval.ptr) = s;
 			;}
@@ -1794,9 +1797,9 @@ yyreduce:
   case 26:
 
 /* Line 1455 of yacc.c  */
-#line 257 "parse"
+#line 260 "parse"
     { 
-				cout << "assignment statement" << endl;
+				DEBUG cout << "assignment statement" << endl;
 				stmt* s = new stmt_assign((yyvsp[(3) - (6)].str), (yyvsp[(1) - (6)].str), (expr*) (yyvsp[(5) - (6)].ptr));
 				(yyval.ptr) = s;
 			;}
@@ -1805,9 +1808,9 @@ yyreduce:
   case 27:
 
 /* Line 1455 of yacc.c  */
-#line 263 "parse"
+#line 266 "parse"
     { 
-				cout << "assignment statement" << endl;
+				DEBUG cout << "assignment statement" << endl;
 				stmt* s = new stmt_assign((yyvsp[(3) - (6)].str), (yyvsp[(1) - (6)].str), (expr*) (yyvsp[(5) - (6)].ptr));
 				(yyval.ptr) = s;
 			;}
@@ -1816,9 +1819,9 @@ yyreduce:
   case 28:
 
 /* Line 1455 of yacc.c  */
-#line 269 "parse"
+#line 272 "parse"
     { 
-				cout << "function call statement" << endl; 
+				DEBUG cout << "function call statement" << endl; 
 				stmt* s = new stmt_call((yyvsp[(1) - (5)].str),(yyvsp[(3) - (5)].ptr));
 				(yyval.ptr) = s;
 			;}
@@ -1827,9 +1830,9 @@ yyreduce:
   case 29:
 
 /* Line 1455 of yacc.c  */
-#line 275 "parse"
+#line 278 "parse"
     { 
-				cout << "function call from object statement" << endl; 
+				DEBUG cout << "function call from object statement" << endl; 
 				stmt* s = new stmt_call((yyvsp[(3) - (7)].str), (yyvsp[(1) - (7)].str), (yyvsp[(5) - (7)].ptr));
 				(yyval.ptr) = s;
 			;}
@@ -1838,9 +1841,9 @@ yyreduce:
   case 30:
 
 /* Line 1455 of yacc.c  */
-#line 281 "parse"
+#line 284 "parse"
     { 
-				cout << "function call from name statement" << endl; 
+				DEBUG cout << "function call from name statement" << endl; 
 				stmt* s = new stmt_call((yyvsp[(3) - (7)].str), (yyvsp[(1) - (7)].str), (yyvsp[(5) - (7)].ptr));
 				(yyval.ptr) = s;
 			;}
@@ -1849,9 +1852,9 @@ yyreduce:
   case 31:
 
 /* Line 1455 of yacc.c  */
-#line 287 "parse"
+#line 290 "parse"
     { 
-				cout << "local var define and assignment" << endl; 
+				DEBUG cout << "local var define and assignment" << endl; 
 				stmt* s = new stmt_var((yyvsp[(1) - (5)].str), (yyvsp[(2) - (5)].str), (yyvsp[(4) - (5)].ptr));
 				(yyval.ptr) = s;
 			;}
@@ -1860,9 +1863,9 @@ yyreduce:
   case 32:
 
 /* Line 1455 of yacc.c  */
-#line 293 "parse"
+#line 296 "parse"
     { 
-				cout << "local var define and assignment" << endl; 
+				DEBUG cout << "local var define and assignment" << endl; 
 				stmt* s = new stmt_var((yyvsp[(1) - (6)].str), (yyvsp[(2) - (6)].str), (yyvsp[(3) - (6)].str), (yyvsp[(5) - (6)].ptr));
 				(yyval.ptr) = s;
 			;}
@@ -1871,9 +1874,9 @@ yyreduce:
   case 33:
 
 /* Line 1455 of yacc.c  */
-#line 299 "parse"
+#line 302 "parse"
     { 
-				cout << "local var define and assignment" << endl; 
+				DEBUG cout << "local var define and assignment" << endl; 
 				stmt* s = new stmt_var((yyvsp[(1) - (5)].str),(yyvsp[(2) - (5)].str), (yyvsp[(4) - (5)].ptr));
 				(yyval.ptr) = s;
 			;}
@@ -1882,9 +1885,9 @@ yyreduce:
   case 34:
 
 /* Line 1455 of yacc.c  */
-#line 305 "parse"
+#line 308 "parse"
     { 
-				cout << "local var define" << endl; 
+				DEBUG cout << "local var define" << endl; 
 				stmt* s = new stmt_var((yyvsp[(1) - (3)].str), (yyvsp[(2) - (3)].str));
 				(yyval.ptr) = s;
 			;}
@@ -1893,9 +1896,9 @@ yyreduce:
   case 35:
 
 /* Line 1455 of yacc.c  */
-#line 311 "parse"
+#line 314 "parse"
     { 
-				cout << "local var define" << endl; 
+				DEBUG cout << "local var define" << endl; 
 				stmt* s = new stmt_var((yyvsp[(1) - (4)].str), (yyvsp[(2) - (4)].str), (yyvsp[(3) - (4)].str));
 				(yyval.ptr) = s;
 			;}
@@ -1904,9 +1907,9 @@ yyreduce:
   case 36:
 
 /* Line 1455 of yacc.c  */
-#line 317 "parse"
+#line 320 "parse"
     { 
-				cout << "local var define" << endl; 
+				DEBUG cout << "local var define" << endl; 
 				stmt* s = new stmt_var((yyvsp[(1) - (3)].str), (yyvsp[(2) - (3)].str));
 				(yyval.ptr) = s;
 			;}
@@ -1915,9 +1918,9 @@ yyreduce:
   case 37:
 
 /* Line 1455 of yacc.c  */
-#line 323 "parse"
+#line 326 "parse"
     { 
-				cout << "if statement" << endl;
+				DEBUG cout << "if statement" << endl;
 				stmt* s = new stmt_if((yyvsp[(3) - (5)].ptr), (yyvsp[(5) - (5)].ptr));
 				(yyval.ptr) = s;
 			;}
@@ -1926,9 +1929,9 @@ yyreduce:
   case 38:
 
 /* Line 1455 of yacc.c  */
-#line 329 "parse"
+#line 332 "parse"
     { 
-				cout << "if else statement" << endl;
+				DEBUG cout << "if else statement" << endl;
 				stmt* s = new stmt_if((yyvsp[(3) - (7)].ptr), (yyvsp[(5) - (7)].ptr), (yyvsp[(7) - (7)].ptr));
 				(yyval.ptr) = s;
 			;}
@@ -1937,9 +1940,9 @@ yyreduce:
   case 39:
 
 /* Line 1455 of yacc.c  */
-#line 335 "parse"
+#line 338 "parse"
     { 
-				cout << "while loop" << endl;
+				DEBUG cout << "while loop" << endl;
 				stmt* s = new stmt_while((yyvsp[(3) - (5)].ptr), (yyvsp[(5) - (5)].ptr));
 				(yyval.ptr) = s;
 			;}
@@ -1948,9 +1951,9 @@ yyreduce:
   case 40:
 
 /* Line 1455 of yacc.c  */
-#line 341 "parse"
+#line 344 "parse"
     { 
-				cout << "switch statement" << endl;
+				DEBUG cout << "switch statement" << endl;
 				stmt* s = new stmt_switch((yyvsp[(3) - (5)].ptr), (yyvsp[(5) - (5)].ptr));
 				(yyval.ptr) = s;
 			;}
@@ -1959,9 +1962,9 @@ yyreduce:
   case 41:
 
 /* Line 1455 of yacc.c  */
-#line 347 "parse"
+#line 350 "parse"
     {
-				cout << "return statment" << endl;
+				DEBUG cout << "return statment" << endl;
 				stmt* s = new stmt_return((yyvsp[(2) - (3)].ptr));
 				(yyval.ptr) = s;
 			;}
@@ -1970,30 +1973,30 @@ yyreduce:
   case 42:
 
 /* Line 1455 of yacc.c  */
-#line 355 "parse"
-    { cout << "statement block" << endl; ;}
+#line 358 "parse"
+    { DEBUG cout << "statement block" << endl; ;}
     break;
 
   case 43:
 
 /* Line 1455 of yacc.c  */
-#line 359 "parse"
-    { cout << "last statement" << endl; ;}
+#line 362 "parse"
+    { DEBUG cout << "last statement" << endl; ;}
     break;
 
   case 44:
 
 /* Line 1455 of yacc.c  */
-#line 361 "parse"
-    { cout << "continue statement list" << endl; ;}
+#line 364 "parse"
+    { DEBUG cout << "continue statement list" << endl; ;}
     break;
 
   case 45:
 
 /* Line 1455 of yacc.c  */
-#line 365 "parse"
+#line 368 "parse"
     { 
-				cout << "cases block" << endl;
+				DEBUG cout << "cases block" << endl;
 				(yyval.ptr) = (yyvsp[(2) - (3)].ptr);
 			;}
     break;
@@ -2001,9 +2004,9 @@ yyreduce:
   case 46:
 
 /* Line 1455 of yacc.c  */
-#line 371 "parse"
+#line 374 "parse"
     { 
-				cout << "case of value" << endl; 
+				DEBUG cout << "case of value" << endl; 
 				list<switch_case*>* l = new list<switch_case*>();
 				switch_case* s = new switch_case((yyvsp[(2) - (7)].ptr), (yyvsp[(4) - (7)].ptr));
 				l->push_back(s);
@@ -2015,9 +2018,9 @@ yyreduce:
   case 47:
 
 /* Line 1455 of yacc.c  */
-#line 380 "parse"
+#line 383 "parse"
     { 
-				cout << "end of cases" << endl;
+				DEBUG cout << "end of cases" << endl;
 				list<switch_case*>* l = new list<switch_case*>();
 				(yyval.ptr) = l;
 			;}
@@ -2026,7 +2029,7 @@ yyreduce:
   case 48:
 
 /* Line 1455 of yacc.c  */
-#line 388 "parse"
+#line 391 "parse"
     {
 				(yyval.ptr) = new id_class((yyvsp[(1) - (1)].str));
 			;}
@@ -2035,7 +2038,7 @@ yyreduce:
   case 49:
 
 /* Line 1455 of yacc.c  */
-#line 392 "parse"
+#line 395 "parse"
     {
 				(yyval.ptr) = new id_class((yyvsp[(1) - (3)].str),(yyvsp[(3) - (3)].str));
 			;}
@@ -2044,7 +2047,7 @@ yyreduce:
   case 50:
 
 /* Line 1455 of yacc.c  */
-#line 396 "parse"
+#line 399 "parse"
     {
 				(yyval.ptr) = new id_class((yyvsp[(1) - (3)].str),(yyvsp[(3) - (3)].str));
 			;}
@@ -2053,7 +2056,7 @@ yyreduce:
   case 51:
 
 /* Line 1455 of yacc.c  */
-#line 402 "parse"
+#line 405 "parse"
     {
 				(yyval.ptr) = new expr((yyvsp[(3) - (3)].ptr), (yyvsp[(2) - (3)].str), (yyvsp[(1) - (3)].ptr));
 			;}
@@ -2062,7 +2065,7 @@ yyreduce:
   case 52:
 
 /* Line 1455 of yacc.c  */
-#line 406 "parse"
+#line 409 "parse"
     {
 				(yyval.ptr) = new expr((yyvsp[(2) - (2)].ptr), (yyvsp[(1) - (2)].str));
 			;}
@@ -2071,7 +2074,7 @@ yyreduce:
   case 53:
 
 /* Line 1455 of yacc.c  */
-#line 410 "parse"
+#line 413 "parse"
     {
 				(yyval.ptr) = new expr((yyvsp[(2) - (2)].ptr), (yyvsp[(1) - (2)].str));
 			;}
@@ -2080,7 +2083,7 @@ yyreduce:
   case 54:
 
 /* Line 1455 of yacc.c  */
-#line 414 "parse"
+#line 417 "parse"
     {
 				(yyval.ptr) = (yyvsp[(1) - (1)].ptr);
 			;}
@@ -2089,7 +2092,7 @@ yyreduce:
   case 55:
 
 /* Line 1455 of yacc.c  */
-#line 420 "parse"
+#line 423 "parse"
     {
 				(yyval.ptr) = (yyvsp[(2) - (3)].ptr);
 			;}
@@ -2098,16 +2101,16 @@ yyreduce:
   case 56:
 
 /* Line 1455 of yacc.c  */
-#line 424 "parse"
+#line 427 "parse"
     {
-				cout << "DEAL WITH FUNCTION CALLS IN EXPRESSIONS LATER" << endl;
+				DEBUG cout << "DEAL WITH FUNCTION CALLS IN EXPRESSIONS LATER" << endl;
 			;}
     break;
 
   case 57:
 
 /* Line 1455 of yacc.c  */
-#line 428 "parse"
+#line 431 "parse"
     {
 				(yyval.ptr) = new expr((yyvsp[(1) - (1)].ptr));
 			;}
@@ -2116,7 +2119,7 @@ yyreduce:
   case 58:
 
 /* Line 1455 of yacc.c  */
-#line 434 "parse"
+#line 437 "parse"
     {
 				(yyval.ptr) = new expr((yyvsp[(3) - (3)].ptr), (yyvsp[(2) - (3)].str), (yyvsp[(1) - (3)].ptr));
 			;}
@@ -2125,7 +2128,7 @@ yyreduce:
   case 59:
 
 /* Line 1455 of yacc.c  */
-#line 438 "parse"
+#line 441 "parse"
     {
 				(yyval.ptr) = (yyvsp[(1) - (1)].ptr);
 			;}
@@ -2134,7 +2137,7 @@ yyreduce:
   case 60:
 
 /* Line 1455 of yacc.c  */
-#line 444 "parse"
+#line 447 "parse"
     {
 				(yyval.ptr) = new value(4,(yyvsp[(1) - (1)].str));
 			;}
@@ -2143,7 +2146,7 @@ yyreduce:
   case 61:
 
 /* Line 1455 of yacc.c  */
-#line 448 "parse"
+#line 451 "parse"
     {
 				(yyval.ptr) = new value(3,(yyvsp[(1) - (3)].str),(yyvsp[(3) - (3)].str));
 			;}
@@ -2152,7 +2155,7 @@ yyreduce:
   case 62:
 
 /* Line 1455 of yacc.c  */
-#line 452 "parse"
+#line 455 "parse"
     {
 				(yyval.ptr) = new value(3,(yyvsp[(1) - (3)].str),(yyvsp[(3) - (3)].str));
 			;}
@@ -2161,7 +2164,7 @@ yyreduce:
   case 63:
 
 /* Line 1455 of yacc.c  */
-#line 456 "parse"
+#line 459 "parse"
     {
 				(yyval.ptr) = new value(0,(yyvsp[(1) - (1)].str));
 			;}
@@ -2170,7 +2173,7 @@ yyreduce:
   case 64:
 
 /* Line 1455 of yacc.c  */
-#line 460 "parse"
+#line 463 "parse"
     {
 				(yyval.ptr) = new value(1,(uint32_t) (yyvsp[(1) - (1)].ptr));
 			;}
@@ -2179,7 +2182,7 @@ yyreduce:
   case 65:
 
 /* Line 1455 of yacc.c  */
-#line 466 "parse"
+#line 469 "parse"
     {
 				list<value*>* l = new list<value*>();
 				l->push_back((value*) (yyvsp[(1) - (1)].ptr));
@@ -2190,7 +2193,7 @@ yyreduce:
   case 66:
 
 /* Line 1455 of yacc.c  */
-#line 472 "parse"
+#line 475 "parse"
     {
 				list<value*>* l = new list<value*>();
 				l->push_back((value*) (yyvsp[(1) - (3)].ptr));
@@ -2202,7 +2205,7 @@ yyreduce:
   case 67:
 
 /* Line 1455 of yacc.c  */
-#line 479 "parse"
+#line 482 "parse"
     {
 				(yyval.ptr) = new list<value*>();
 			;}
@@ -2211,7 +2214,7 @@ yyreduce:
 
 
 /* Line 1455 of yacc.c  */
-#line 2215 "parse.tab.c"
+#line 2218 "parse.tab.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -2423,16 +2426,17 @@ yyreturn:
 
 
 /* Line 1675 of yacc.c  */
-#line 505 "parse"
+#line 508 "parse"
 
-int main(int argc, char *argv[]) {
+void buildTree(char* filename) 
+{
 	// open a file handle to a particular file:
-	FILE *myfile = fopen(argv[1], "r");
+	FILE *myfile = fopen(filename, "r");
 	prgm = new program();
 	// make sure it is valid:
 	if (!myfile) {
-		cout << "I can't open file: " << argv[1] << endl;
-		return -1;
+		DEBUG cout << "I can't open file: " << filename << endl;
+		exit(-1);
 	}
 	// set flex to read from it instead of defaulting to STDIN:
 	yyin = myfile;
@@ -2441,10 +2445,10 @@ int main(int argc, char *argv[]) {
 	do {
 		yyparse();
 	} while (!feof(yyin));
-	
 }
 
-void yyerror(const char *s) {
+void yyerror(const char *s) 
+{
 	fprintf(stderr,"At line %d: %s ",s,yylineno);
 	// might as well halt now:
 	exit(-1);

@@ -6,6 +6,8 @@
 %error-verbose
 
 %{
+#define DEBUG
+
 #include <cstdio>
 #include <iostream>
 #include "tree_nodes.h"
@@ -18,10 +20,11 @@ extern "C" int yyparse();
 extern "C" FILE *yyin;
 extern "C" char* yytext;
 extern "C" int yylineno;
+extern "C" program* prgm;
+extern "C" void buildTree(char* filename);
 
 void yyerror(const char *s);
 void mergeLists( list<void*>* a, list<void*>* b);
-program* prgm;
 %}
 
 // so we can deal with multiple types
@@ -96,13 +99,13 @@ program* prgm;
 
 program	: program func
 			{ 
-				cout << "function added to program" << endl;
-				prgm->definitions->push_back(* ((def*) $1)); 
+				DEBUG cout << "function added to program" << endl;
+				prgm->definitions->push_back(((def*) $1)); 
 			}
 		| program global
 			{ 
-				cout << "global thingy" << endl;
-				prgm->definitions->push_back(* ((def*) $1));
+				DEBUG cout << "global thingy" << endl;
+				prgm->definitions->push_back(((def*) $1));
 			}
 		| /* empty */
 			{
@@ -113,41 +116,41 @@ program	: program func
 func	: BASE_TYPE NAME params func_n stmtb
 			{ 
 				func* f = new func($1,$2,(std::list<param*>*) $3, $4, (std::list<stmt*>*) $5);
-				cout << "Found a function declaration: " << f->name << endl;
-				cout << "\tfunction number: " << f->func_number << endl;
-				cout << "\treturn type: " << f->return_type << endl;
+				DEBUG cout << "Found a function declaration: " << f->name << endl;
+				DEBUG cout << "\tfunction number: " << f->func_number << endl;
+				DEBUG cout << "\treturn type: " << f->return_type << endl;
 				$$ = f;
-				cout << "finished" << endl;
+				DEBUG cout << "finished" << endl;
 			}
 		;
 
 func_n	: '{' number '}'
 			{ 
-				cout << "func number" << endl;
+				DEBUG cout << "func number" << endl;
 				$$ = (uint32_t) $2;
 			}
 		| '{' '}'
 			{ 
-				cout << "func number" << endl;
+				DEBUG cout << "func number" << endl;
 				$$ = -1; 
 			}
 		;
 
 params	: '(' param_l ')'
 			{ 
-				cout << "func params" << endl;
+				DEBUG cout << "func params" << endl;
 				$$ = $2; 
 			}
 		| '(' ')'
 			{ 
-				cout << "func params empty" << endl;
+				DEBUG cout << "func params empty" << endl;
 				$$ = (void*) new list<param*>(); 
 			}
 		;
 
 param_l	: BASE_TYPE NAME
 			{ 
-				cout << "param listing" << endl;
+				DEBUG cout << "param listing" << endl;
 				list<param*>* t = new list<param*>();
 				param* p = new param($1,$2);
 				t->push_back(p); 
@@ -155,21 +158,21 @@ param_l	: BASE_TYPE NAME
 			}
 		| SUPER_TYPE BASE_TYPE NAME
 			{ 
-				cout << "param listing" << endl;
+				DEBUG cout << "param listing" << endl;
 				list<param*>* t = new list<param*>();
 				t->push_back(new param($2,$3,$1)); 
 				$$ = t;
 			}
 		| OBJ_TYPE NAME
 			{ 
-				cout << "param listing" << endl;
+				DEBUG cout << "param listing" << endl;
 				list<param*>* t = new list<param*>();
 				t->push_back(new param($1,$2)); 
 				$$ = t;
 			}
 		| param_l ',' BASE_TYPE NAME
 			{ 
-				cout << "param listing" << endl;
+				DEBUG cout << "param listing" << endl;
 				list<param*>* t = new list<param*>();
 				t->push_back(new param($3,$4));
 				mergeLists((list<void*>*) $1,(list<void*>*) t);
@@ -177,7 +180,7 @@ param_l	: BASE_TYPE NAME
 			}
 		| param_l ',' SUPER_TYPE BASE_TYPE NAME
 			{ 
-				cout << "param listing" << endl;
+				DEBUG cout << "param listing" << endl;
 				list<param*>* t = new list<param*>();
 				t->push_back(new param($4,$5,$3)); 
 				mergeLists((list<void*>*) $1,(list<void*>*) t);
@@ -185,7 +188,7 @@ param_l	: BASE_TYPE NAME
 			}
 		| param_l ',' OBJ_TYPE NAME
 			{ 
-				cout << "param listing" << endl;
+				DEBUG cout << "param listing" << endl;
 				list<param*>* t = new list<param*>();
 				t->push_back(new param($3,$4)); 
 				mergeLists((list<void*>*) $1,(list<void*>*) t);
@@ -197,35 +200,35 @@ global	: SUPER_TYPE BASE_TYPE NAME ';'
 			{ 
 				global* g = new global($2, $3, $1);
 				$$ = g;
-				cout << "global supertyped delclaration" << endl; 
+				DEBUG cout << "global supertyped delclaration" << endl; 
 			}
 		| BASE_TYPE NAME ';'
 			{ 
-				cout << "global base type declaration" << endl; 
+				DEBUG cout << "global base type declaration" << endl; 
 				global* g = new global($1, $2);
 				$$ = g;
 			}
 		| OBJ_TYPE NAME ';'
 			{ 
-				cout << "global obj type declaration" << endl; 
+				DEBUG cout << "global obj type declaration" << endl; 
 				global* g = new global($1, $2);
 				$$ = g;
 			}
 		| SUPER_TYPE BASE_TYPE NAME ASSIGN number ';'
 			{ 
-				cout << "global supertyped delclaration with assignment" << endl; 
+				DEBUG cout << "global supertyped delclaration with assignment" << endl; 
 				global* g = new global($2, $3, (uint32_t) $5, $1);
 				$$ = g;
 			}
 		| BASE_TYPE NAME ASSIGN number ';'
 			{ 
-				cout << "global base type declaration with assignment" << endl; 
+				DEBUG cout << "global base type declaration with assignment" << endl; 
 				global* g = new global($1, $2, (uint32_t) $4);
 				$$ = g;
 			}
 		| OBJ_TYPE NAME ASSIGN number ';'
 			{ 
-				cout << "global obj type declaration with assignment" << endl; 
+				DEBUG cout << "global obj type declaration with assignment" << endl; 
 				global* g = new global($1, $2, (uint32_t) $4);
 				$$ = g;
 			}
@@ -249,127 +252,127 @@ number	: HEX
 
 stmt	: NAME ASSIGN expr ';'
 			{ 
-				cout << "assignment statement" << endl;
+				DEBUG cout << "assignment statement" << endl;
 				stmt* s = new stmt_assign($1,(expr*) $3);
 				$$ = s;
 			}
 		| OBJ '.' NAME ASSIGN expr ';'
 			{ 
-				cout << "assignment statement" << endl;
+				DEBUG cout << "assignment statement" << endl;
 				stmt* s = new stmt_assign($3, $1, (expr*) $5);
 				$$ = s;
 			}
 		| NAME '.' NAME ASSIGN expr ';'
 			{ 
-				cout << "assignment statement" << endl;
+				DEBUG cout << "assignment statement" << endl;
 				stmt* s = new stmt_assign($3, $1, (expr*) $5);
 				$$ = s;
 			}
 		| NAME '(' values ')' ';'
 			{ 
-				cout << "function call statement" << endl; 
+				DEBUG cout << "function call statement" << endl; 
 				stmt* s = new stmt_call($1,$3);
 				$$ = s;
 			}
 		| OBJ '.' NAME '(' values ')' ';'
 			{ 
-				cout << "function call from object statement" << endl; 
+				DEBUG cout << "function call from object statement" << endl; 
 				stmt* s = new stmt_call($3, $1, $5);
 				$$ = s;
 			}
 		| NAME '.' NAME '(' values ')' ';'
 			{ 
-				cout << "function call from name statement" << endl; 
+				DEBUG cout << "function call from name statement" << endl; 
 				stmt* s = new stmt_call($3, $1, $5);
 				$$ = s;
 			}
 		| BASE_TYPE NAME ASSIGN expr ';'
 			{ 
-				cout << "local var define and assignment" << endl; 
+				DEBUG cout << "local var define and assignment" << endl; 
 				stmt* s = new stmt_var($1, $2, $4);
 				$$ = s;
 			}
 		| SUPER_TYPE BASE_TYPE NAME ASSIGN expr ';'
 			{ 
-				cout << "local var define and assignment" << endl; 
+				DEBUG cout << "local var define and assignment" << endl; 
 				stmt* s = new stmt_var($1, $2, $3, $5);
 				$$ = s;
 			}
 		| OBJ_TYPE NAME ASSIGN expr ';'
 			{ 
-				cout << "local var define and assignment" << endl; 
+				DEBUG cout << "local var define and assignment" << endl; 
 				stmt* s = new stmt_var($1,$2, $4);
 				$$ = s;
 			}
 		| BASE_TYPE NAME ';'
 			{ 
-				cout << "local var define" << endl; 
+				DEBUG cout << "local var define" << endl; 
 				stmt* s = new stmt_var($1, $2);
 				$$ = s;
 			}
 		| SUPER_TYPE BASE_TYPE NAME ';'
 			{ 
-				cout << "local var define" << endl; 
+				DEBUG cout << "local var define" << endl; 
 				stmt* s = new stmt_var($1, $2, $3);
 				$$ = s;
 			}
 		| OBJ_TYPE NAME ';'
 			{ 
-				cout << "local var define" << endl; 
+				DEBUG cout << "local var define" << endl; 
 				stmt* s = new stmt_var($1, $2);
 				$$ = s;
 			}
 		| IF '(' expr ')' stmtb
 			{ 
-				cout << "if statement" << endl;
+				DEBUG cout << "if statement" << endl;
 				stmt* s = new stmt_if($3, $5);
 				$$ = s;
 			}
 		| IF '(' expr ')' stmtb ELSE stmtb
 			{ 
-				cout << "if else statement" << endl;
+				DEBUG cout << "if else statement" << endl;
 				stmt* s = new stmt_if($3, $5, $7);
 				$$ = s;
 			}
 		| WHILE '(' expr ')' stmtb
 			{ 
-				cout << "while loop" << endl;
+				DEBUG cout << "while loop" << endl;
 				stmt* s = new stmt_while($3, $5);
 				$$ = s;
 			}
 		| SWITCH '(' id ')' caseb
 			{ 
-				cout << "switch statement" << endl;
+				DEBUG cout << "switch statement" << endl;
 				stmt* s = new stmt_switch($3, $5);
 				$$ = s;
 			}
 		| RETURN value ';'
 			{
-				cout << "return statment" << endl;
+				DEBUG cout << "return statment" << endl;
 				stmt* s = new stmt_return($2);
 				$$ = s;
 			}
 		;
 
 stmtb	: '{' stmts '}'
-			{ cout << "statement block" << endl; }
+			{ DEBUG cout << "statement block" << endl; }
 		;
 
 stmts	: stmt
-			{ cout << "last statement" << endl; }
+			{ DEBUG cout << "last statement" << endl; }
 		| stmt stmts
-			{ cout << "continue statement list" << endl; }
+			{ DEBUG cout << "continue statement list" << endl; }
 		;
 
 caseb	: '{' cases '}'
 			{ 
-				cout << "cases block" << endl;
+				DEBUG cout << "cases block" << endl;
 				$$ = $2;
 			}
 
 cases	: CASE value ':' stmts BREAK ';' cases
 			{ 
-				cout << "case of value" << endl; 
+				DEBUG cout << "case of value" << endl; 
 				list<switch_case*>* l = new list<switch_case*>();
 				switch_case* s = new switch_case($2, $4);
 				l->push_back(s);
@@ -378,7 +381,7 @@ cases	: CASE value ':' stmts BREAK ';' cases
 			}
 		| /* Emtpy Set */
 			{ 
-				cout << "end of cases" << endl;
+				DEBUG cout << "end of cases" << endl;
 				list<switch_case*>* l = new list<switch_case*>();
 				$$ = l;
 			}
@@ -422,7 +425,7 @@ expr_	:'(' expr ')'
 			}
 		| NAME '(' values ')'
 			{
-				cout << "DEAL WITH FUNCTION CALLS IN EXPRESSIONS LATER" << endl;
+				DEBUG cout << "DEAL WITH FUNCTION CALLS IN EXPRESSIONS LATER" << endl;
 			}
 		| value
 			{
@@ -503,14 +506,15 @@ biop	: PLUS
 
 
 %%
-int main(int argc, char *argv[]) {
+void buildTree(char* filename) 
+{
 	// open a file handle to a particular file:
-	FILE *myfile = fopen(argv[1], "r");
+	FILE *myfile = fopen(filename, "r");
 	prgm = new program();
 	// make sure it is valid:
 	if (!myfile) {
-		cout << "I can't open file: " << argv[1] << endl;
-		return -1;
+		DEBUG cout << "I can't open file: " << filename << endl;
+		exit(-1);
 	}
 	// set flex to read from it instead of defaulting to STDIN:
 	yyin = myfile;
@@ -519,10 +523,10 @@ int main(int argc, char *argv[]) {
 	do {
 		yyparse();
 	} while (!feof(yyin));
-	
 }
 
-void yyerror(const char *s) {
+void yyerror(const char *s) 
+{
 	fprintf(stderr,"At line %d: %s ",s,yylineno);
 	// might as well halt now:
 	exit(-1);

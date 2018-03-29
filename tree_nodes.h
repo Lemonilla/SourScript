@@ -10,23 +10,26 @@ extern YYSTYPE yylval;
 class def {};
 class stmt {};
 
-union num {
+union num 
+{
 	uint32_t integer;
 	float real;
 };
 
 /// Normal Classes
-class program {
+class program 
+{
 	public:
-		std::list<def>* definitions;
+		std::list<def*>* definitions;
 		program()
 		{
-			definitions = new std::list<def>();
+			definitions = new std::list<def*>();
 		}
 };
 
 
-class value {
+class value 
+{
 	public:
 		uint32_t value_type;
 			// 0 : string
@@ -61,7 +64,8 @@ class value {
 		}
 };
 
-class param {
+class param 
+{
 	public:
 		std::string super_type; // optional
 		std::string sub_type;
@@ -80,18 +84,19 @@ class param {
 		}
 };
 
-class global : public def {
+class global : public def 
+{
 	public:
 		std::string super_type; // optional
 		std::string sub_type;
 		std::string name;
-		uint32_t value; // optional
+		uint32_t val; // optional
 		global(char* t, char* n, uint32_t v, char* s){
 			std::string ty(t);
 			sub_type = ty;
 			std::string nm(n);
 			name = nm;
-			value = v;
+			val = v;
 			std::string sup(s);
 			super_type = sup;
 		}
@@ -100,7 +105,7 @@ class global : public def {
 			sub_type = ty;
 			std::string nm(n);
 			name = nm;
-			value = v;
+			val = v;
 		}
 		global(char* t, char* n){
 			std::string ty(t);
@@ -118,7 +123,8 @@ class global : public def {
 		}
 };
 
-class expr {
+class expr 
+{
 	public:
 		value* lhs;
 		std::string operation;
@@ -143,7 +149,8 @@ class expr {
 };
 
 
-class func : public def {
+class func : public def 
+{
 	public:
 		std::string return_type; // a base_type
 		std::string name;
@@ -161,16 +168,17 @@ class func : public def {
 		}
 };
 
-class stmt_assign : public stmt {
+class stmt_assign : public stmt 
+{
 	public:
 		std::string id;
 		std::string obj; // optional (can be built in or id)
-		expr* value;
+		expr* val;
 		stmt_assign(char* n, expr* v)
 		{
 			std::string i(n);
 			id = i;
-			value = v;
+			val = v;
 		}
 		stmt_assign(char* n, char* o, expr* v)
 		{
@@ -178,11 +186,12 @@ class stmt_assign : public stmt {
 			id = i;
 			std::string ob(o);
 			obj = ob;
-			value = v;
+			val = v;
 		}
 };
 
-class stmt_call : public stmt {
+class stmt_call : public stmt 
+{
 	public:
 		std::string id;
 		std::string obj; // optional
@@ -201,7 +210,8 @@ class stmt_call : public stmt {
 		}
 };
 
-class stmt_var : public stmt {
+class stmt_var : public stmt 
+{
 	public:
 		std::string super_type; // optional
 		std::string sub_type;
@@ -243,7 +253,8 @@ class stmt_var : public stmt {
 		}
 };
 
-class stmt_if : public stmt {
+class stmt_if : public stmt 
+{
 	public:
 		expr* check;
 		std::list<stmt*>* body;
@@ -262,7 +273,8 @@ class stmt_if : public stmt {
 		
 };
 
-class stmt_while : public stmt {
+class stmt_while : public stmt 
+{
 	public:
 		expr* check;
 		std::list<stmt*>* body;
@@ -273,7 +285,8 @@ class stmt_while : public stmt {
 		}
 };
 
-class switch_case {
+class switch_case 
+{
 	public:
 		std::string val;
 		std::list<stmt*>* body;
@@ -286,7 +299,8 @@ class switch_case {
 
 };
 
-class stmt_return : public stmt {
+class stmt_return : public stmt 
+{
 	public:
 		std::string val;
 		stmt_return(void* v){
@@ -314,7 +328,8 @@ class id_class
 		}
 };
 
-class stmt_switch : public stmt {
+class stmt_switch : public stmt 
+{
 	public:
 		value* val; // optional
 		std::list<switch_case*>* cases;
@@ -324,54 +339,3 @@ class stmt_switch : public stmt {
 			cases = (std::list<switch_case*>*) c;
 		}
 };
-
-
-
-
-
-/// Token Defines
-#ifndef TOKENDEF
-	#define TOKENDEF
-
-	//super_type
-	#define _SYNC            1
-	#define _TEMP            2
-	#define _RESERVED        3
-
-	//sub_type
-	#define _VOID            1
-	#define _SINGLE          2
-	#define _DWORD           3
-	#define _WORD            4
-	#define _BYTE            5
-	#define _NIBBLE          6
-	#define _BIT             7
-	#define _STRING          8 // obj_type
-	#define _NPC             9 // obj_type
-	#define _QB             10 // obj_type
-	#define _TIMER          11 // obj_type
-	#define _FLOOR          12 // obj_type
-	#define _MONSTER        13 // obj_type
-
-	//operation
-	#define _PLUS            1
-	#define _MINUS           2 
-	#define _DIV             3
-	#define _MUL             4
-	#define _MOD             5 
-	#define _BIT_OR          6  
-	#define _BIT_AND         7   
-	#define _BIT_XOR         8   
-	#define _RSL             9
-	#define _LSL            10
-	#define _AND            11
-	#define _OR             12
-	#define _GTR            13
-	#define _LSS            14
-	#define _GEQ            15
-	#define _LEQ            16
-	#define _EQU            17
-	#define _NEQ            18
-	#define _NOT            19
-	#define _ADDR           20
-#endif
